@@ -4,6 +4,8 @@
 
 package com.lloseng.ocsf.server;
 
+import java.io.IOException;
+
 /**
 * The <code> ObservableOriginatorServer </code> is a subclass
 * of <code> ObservableServer </code> that sends
@@ -23,17 +25,22 @@ package com.lloseng.ocsf.server;
 */
 public class ObservableOriginatorServer extends ObservableServer
 {
-  // Constructor ******************************************************
+	// Attributes ***********************************
+	private AdaptableServer service;
+	
+	
+	// Constructor ******************************************************
 
   /**
    * Constructs a new server.
    *
    * @param port the port on which to listen.
    */
-  public ObservableOriginatorServer(int port)
-  {
+  public ObservableOriginatorServer(int port) {
     super(port);
+    this.service = new AdaptableServer(port, this);
   }
+  
 
   // Instance methods ************************************************
 
