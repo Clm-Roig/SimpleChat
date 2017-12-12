@@ -65,8 +65,6 @@ public class ChatClient implements Observer
 		this.obsClient.addObserver(this);
 		this.clientUI = clientUI;
 		this.idClient = idClient;
-		obsClient.openConnection();
-		obsClient.sendToServer("#login "+this.idClient);
 	}
 
 
@@ -163,14 +161,12 @@ public class ChatClient implements Observer
 						obsClient.openConnection();
 						obsClient.sendToServer("#login "+this.idClient);
 					} catch (IOException e) {
-						clientUI.display("Error connecting to server : ");
-						e.printStackTrace();
+						clientUI.display("Error connecting to server : check your port and host with #getport and #gethost.");
 					}
 				}
 			break;
 
 			case("gethost"):
-				clientUI.display("WHO ARE YOU TELLING TO GETLOST? oh wait...sorry, I'll get the host for you right away ^^'");
 				clientUI.display("Host: " + obsClient.getHost());
 			break;
 

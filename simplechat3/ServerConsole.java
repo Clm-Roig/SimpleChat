@@ -1,6 +1,5 @@
 import java.io.*;
 
-import client.ChatClient;
 import server.*;
 import common.*;
 
