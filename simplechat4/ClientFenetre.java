@@ -86,18 +86,21 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		this.setContentPane(mainPanel); 	    
 		this.setLocationRelativeTo(null);
 		
-		display("Welcome in "+APP_NAME);
+		display("Welcome to "+APP_NAME+"!");
 
 		try {
 			client = new ChatClient(host, port, idClient, this);
 		} 
 		catch(IOException exception) {
-			System.out.println("Error: Can't setup connection!"
+			System.out.println("Error: Can't create client!"
 					+ " Terminating client.");
 			exception.printStackTrace();
 
 			System.exit(1);
 		}
+		
+		this.setVisible(true);
+		textFChat.grabFocus();
 	}
 
 	@Override
@@ -112,6 +115,8 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		if(event.getSource() == this.buttonSend) {
 			if(text != null && !text.trim().isEmpty()) {		
 				client.handleMessageFromClientUI(text);
+				textFChat.setText("");
+				textFChat.grabFocus();
 			}
 		}
 	}
@@ -124,6 +129,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 			String text = textFChat.getText();	 	
 			if(text != null && !text.trim().isEmpty()) {		
 				client.handleMessageFromClientUI(text);
+				textFChat.setText("");
 			}
 		}		
 	}
@@ -141,39 +147,11 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 
 	// *********** MAIN ************** //
 	public static void main(String[] args){
-		String host = "";
-		String idClient = "";
-		int port = 0;  //The port number
-
-		try {
-			idClient = args[0];
-		}
-		catch(ArrayIndexOutOfBoundsException e) {
-			System.out.println("Please, provide a pseudo to use this client.");
-			System.out.println(">> java ClientConsole YourPseudo");
-			System.exit(1);
-		}
-
-		try {
-			host = args[1];
-		}
-		catch(ArrayIndexOutOfBoundsException e) {
-			host = "localhost";
-		}
-
-		// Port selected. DEFAULT_PORT if not provided or if incorrect format
-		try {
-			port = Integer.parseInt(args[1]);
-		}
-		catch(ArrayIndexOutOfBoundsException e) {
-			port = DEFAULT_PORT;
-		}
-		catch(NumberFormatException e) {
-			port = DEFAULT_PORT;
-		}
-
+		String host = "localhost";
+		String idClient = "JustForTest";
+		int port = DEFAULT_PORT; 
+		
 		ClientFenetre chat = new ClientFenetre(host, port, idClient);
-		chat.setVisible(true);
 	}
 
 
