@@ -23,6 +23,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	ChatClient 			client;
 	private JPanel 		mainPanel;
 	private JTextArea 	displayArea;
+	private JScrollPane scrollPane;
 	private JPanel 		interactPanel;
 	private JTextField 	textFChat;
 	private JButton 	buttonSend;
@@ -73,11 +74,21 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		displayArea.setPreferredSize(new Dimension(WINDOW_WIDTH - MARGIN, WINDOW_HEIGHT - MSG_FONT_SIZE - 2*MARGIN));
 		displayArea.setBackground(Color.lightGray);
 
+		// Scroll Panel
+		this.scrollPane = new JScrollPane(
+				displayArea, 
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+		);
+		scrollPane.setSize(displayArea.getSize());
+		scrollPane.setAutoscrolls(true);
+		
 		// MainPanel Configuration
 		this.mainPanel = new JPanel();	 
-		mainPanel.add(displayArea);
-		mainPanel.add(interactPanel);	    
-
+		//mainPanel.add(displayArea);
+		mainPanel.add(scrollPane);
+		mainPanel.add(interactPanel);
+		
 		// Window Configuration	   
 		this.setTitle(APP_NAME);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
