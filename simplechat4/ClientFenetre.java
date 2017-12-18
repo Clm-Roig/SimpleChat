@@ -15,19 +15,24 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 
 	//Instance variables **********************************************
 
-	final private static int WINDOW_WIDTH = 300;
-	final private static int WINDOW_HEIGHT = 300;
+	final private static int WINDOW_WIDTH = 500;
+	final private static int WINDOW_HEIGHT = 500;
 	final private static int MSG_FONT_SIZE = 20;
 	final private static int MARGIN = 10;
 
 	final private static String APP_NAME = "Simple Chat 4";
 
 	ChatClient 			client;
+	
 	private JPanel 		mainPanel;
 	private JTextArea 	displayArea;
 	private JScrollPane scrollPane;
-	private JPanel 		interactPanel;
+	private JPanel 		chatPanel;
+	private JPanel		interactPanel;
 	private JTextField 	textFChat;
+	
+	private JButton		buttonLogin;
+	private JButton		buttonLogoff;
 	private JButton 	buttonSend;
 
 	//Constructors ****************************************************
@@ -56,7 +61,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	public ClientFenetre(String host, int port, String idClient) {
 		super();
 
-		// Interaction Panel
+		// Chat Panel
 		this.textFChat = new JTextField();
 		textFChat.setPreferredSize(new Dimension(WINDOW_WIDTH - 80 - MARGIN, MSG_FONT_SIZE));
 		textFChat.addKeyListener(this);
@@ -65,9 +70,28 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		buttonSend.setPreferredSize(new Dimension(80 - MARGIN, MSG_FONT_SIZE));
 		buttonSend.addActionListener(this);
 
+		this.chatPanel = new JPanel();
+		chatPanel.add(textFChat);
+		chatPanel.add(buttonSend);
+		
+		// Interact Panel
+		this.buttonLogoff = new JButton("Logoff");
+		buttonLogoff.setPreferredSize(new Dimension(90 - MARGIN, MSG_FONT_SIZE));
+		buttonLogoff.addActionListener(this);
+		
+		this.buttonLogin = new JButton("Login");
+		buttonLogin.setPreferredSize(new Dimension(90 - MARGIN, MSG_FONT_SIZE));
+		buttonLogin.addActionListener(this);
+
 		this.interactPanel = new JPanel();
-		interactPanel.add(textFChat);
-		interactPanel.add(buttonSend);
+		interactPanel.add(buttonLogin);
+		interactPanel.add(buttonLogoff);
+		
+		JPanel southPanel = new JPanel();
+		BoxLayout bl = new BoxLayout(southPanel, BoxLayout.PAGE_AXIS);
+		southPanel.setLayout(bl);
+		southPanel.add(chatPanel);
+		southPanel.add(interactPanel);
 
 		// Displaying messages Area
 		this.displayArea = new JTextArea();
@@ -82,18 +106,21 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		// MainPanel Configuration
 		this.mainPanel = new JPanel(new BorderLayout());	 
 		mainPanel.add(scrollPane, BorderLayout.CENTER);
-		mainPanel.add(interactPanel, BorderLayout.SOUTH);
+	
+	
+		mainPanel.add(southPanel, BorderLayout.SOUTH);
 		
 		// Window Configuration	   
 		this.setTitle(APP_NAME);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		this.setContentPane(mainPanel); 	    
-		this.setLocationRelativeTo(null);
+		this.setContentPane(mainPanel); 	
 		this.pack();
+		this.setLocationRelativeTo(null);
 		
 		display("Welcome to "+APP_NAME+"!\n");
 
+		// Constructing Client
 		try {
 			client = new ChatClient(host, port, idClient, this);
 		} 
@@ -107,7 +134,6 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		
 		this.setVisible(true);
 		textFChat.grabFocus();
-
 	}
 
 	@Override
@@ -127,6 +153,15 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 				textFChat.grabFocus();
 			}
 		}
+		if(event.getSource() == this.buttonLogoff) {
+			client.handleMessageFromClientUI("#logoff");
+			textFChat.grabFocus();			
+		}
+		if(event.getSource() == this.buttonLogin) {
+			client.handleMessageFromClientUI("#login");
+			textFChat.grabFocus();			
+		}
+		
 	}
 
 
