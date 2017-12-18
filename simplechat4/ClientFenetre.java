@@ -4,6 +4,8 @@ import java.io.*;
 import client.*;
 import common.*;
 import javax.swing.*;
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 
 public class ClientFenetre extends JFrame implements ChatIF, ActionListener, KeyListener {
@@ -13,8 +15,8 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 
 	//Instance variables **********************************************
 
-	final private static int WINDOW_WIDTH = 500;
-	final private static int WINDOW_HEIGHT = 500;
+	final private static int WINDOW_WIDTH = 300;
+	final private static int WINDOW_HEIGHT = 300;
 	final private static int MSG_FONT_SIZE = 20;
 	final private static int MARGIN = 10;
 
@@ -71,33 +73,26 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		this.displayArea = new JTextArea();
 		displayArea.setLineWrap(true);
 		displayArea.setEditable(false);
-		displayArea.setPreferredSize(new Dimension(WINDOW_WIDTH - MARGIN, WINDOW_HEIGHT - MSG_FONT_SIZE - 2*MARGIN));
 		displayArea.setBackground(Color.lightGray);
 
 		// Scroll Panel
-		this.scrollPane = new JScrollPane(
-				displayArea, 
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-		);
-		scrollPane.setSize(displayArea.getSize());
-		scrollPane.setAutoscrolls(true);
+		this.scrollPane = new JScrollPane(displayArea);
+		scrollPane.setPreferredSize(new Dimension(WINDOW_WIDTH - MARGIN, WINDOW_HEIGHT - MSG_FONT_SIZE - 2*MARGIN));;
 		
 		// MainPanel Configuration
-		this.mainPanel = new JPanel();	 
-		//mainPanel.add(displayArea);
-		mainPanel.add(scrollPane);
-		mainPanel.add(interactPanel);
+		this.mainPanel = new JPanel(new BorderLayout());	 
+		mainPanel.add(scrollPane, BorderLayout.CENTER);
+		mainPanel.add(interactPanel, BorderLayout.SOUTH);
 		
 		// Window Configuration	   
 		this.setTitle(APP_NAME);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		this.setSize(WINDOW_WIDTH,WINDOW_HEIGHT);
 		this.setContentPane(mainPanel); 	    
 		this.setLocationRelativeTo(null);
+		this.pack();
 		
-		display("Welcome to "+APP_NAME+"!");
+		display("Welcome to "+APP_NAME+"!\n");
 
 		try {
 			client = new ChatClient(host, port, idClient, this);
@@ -112,11 +107,13 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		
 		this.setVisible(true);
 		textFChat.grabFocus();
+
 	}
 
 	@Override
 	public void display(String message) {
 		this.displayArea.append(message + "\n");
+		this.displayArea.setCaretPosition(displayArea.getDocument().getLength());
 	}
 
 	@Override
@@ -141,6 +138,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 			if(text != null && !text.trim().isEmpty()) {		
 				client.handleMessageFromClientUI(text);
 				textFChat.setText("");
+				textFChat.grabFocus();
 			}
 		}		
 	}
