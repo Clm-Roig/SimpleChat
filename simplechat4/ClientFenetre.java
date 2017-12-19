@@ -49,10 +49,10 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	// Misc
 	final private static String APP_NAME = "Simple Chat 4";
 	ChatClient 			client;
-	
+
 	private long dateLastModif = System.currentTimeMillis();
 	private int DELAY_BEFORE_SAVING = 2000;
-	
+
 	//Constructors ****************************************************
 
 	/**
@@ -112,40 +112,40 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		this.textFPort = new JTextField(Integer.toString(port));
 		textFPort.setColumns(6);
 		textFPort.getDocument().addDocumentListener(
-			new DocumentListener() {
-				public void changedUpdate(DocumentEvent e) {
-					
-				}
-				public void removeUpdate(DocumentEvent e) {
+				new DocumentListener() {
+					public void changedUpdate(DocumentEvent e) {
 
-				}
-				public void insertUpdate(DocumentEvent e) {
-					long curentTime = System.currentTimeMillis();
-					System.out.println(curentTime - dateLastModif);
-					if (curentTime - dateLastModif > DELAY_BEFORE_SAVING) {
-						client.handleMessageFromClientUI("#setport "+Integer.parseInt(textFPort.getText()));
 					}
-					dateLastModif = System.currentTimeMillis();		
+					public void removeUpdate(DocumentEvent e) {
+
+					}
+					public void insertUpdate(DocumentEvent e) {
+						long curentTime = System.currentTimeMillis();
+						System.out.println(curentTime - dateLastModif);
+						if (curentTime - dateLastModif > DELAY_BEFORE_SAVING) {
+							client.handleMessageFromClientUI("#setport "+Integer.parseInt(textFPort.getText()));
+						}
+						dateLastModif = System.currentTimeMillis();		
+					}
 				}
-			}
-		);
+				);
 		JLabel labelPort = new JLabel("Port:");
 
 		this.textFHost = new JTextField(host);
 		textFHost.setColumns(10);
 		textFHost.getDocument().addDocumentListener(
-			new DocumentListener() {
-				public void changedUpdate(DocumentEvent e) {
-					
+				new DocumentListener() {
+					public void changedUpdate(DocumentEvent e) {
+
+					}
+					public void removeUpdate(DocumentEvent e) {
+
+					}
+					public void insertUpdate(DocumentEvent e) {
+						client.handleMessageFromClientUI("#sethost "+textFHost.getText());
+					}
 				}
-				public void removeUpdate(DocumentEvent e) {
-					
-				}
-				public void insertUpdate(DocumentEvent e) {
-					client.handleMessageFromClientUI("#sethost "+textFHost.getText());
-				}
-			}
-		);
+				);
 		JLabel labelHost = new JLabel("Host:");
 
 		this.setPanel = new JPanel();
@@ -207,74 +207,74 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 
 		this.setVisible(true);
 		textFChat.grabFocus();
-				}
+	}
 
-				@Override
-				public void display(String message) {
-					this.displayArea.append(message + "\n");
-					this.displayArea.setCaretPosition(displayArea.getDocument().getLength());
-				}
+	@Override
+	public void display(String message) {
+		this.displayArea.append(message + "\n");
+		this.displayArea.setCaretPosition(displayArea.getDocument().getLength());
+	}
 
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					String text = textFChat.getText();
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		String text = textFChat.getText();
 
-					if(event.getSource() == this.buttonSend) {
-						if(text != null && !text.trim().isEmpty()) {		
-							client.handleMessageFromClientUI(text);
-							textFChat.setText("");
-							textFChat.grabFocus();
-						}
-					}
-					if(event.getSource() == this.buttonLogoff) {
-						client.handleMessageFromClientUI("#logoff");
-						textFChat.grabFocus();			
-					}
-					if(event.getSource() == this.buttonLogin) {
-						client.handleMessageFromClientUI("#login");
-						textFChat.grabFocus();			
-					}
-					if(event.getSource() == this.textFHost) {
-						// After 1sec, we save the new hostname
-						text = textFHost.getText();
-						client.handleMessageFromClientUI("#sethost "+text);
-					}
-
-				}
-
-
-				@Override
-				public void keyPressed(KeyEvent e) {
-					int key = e.getKeyCode();
-					if (key == KeyEvent.VK_ENTER) {
-						String text = textFChat.getText();	 	
-						if(text != null && !text.trim().isEmpty()) {		
-							client.handleMessageFromClientUI(text);
-							textFChat.setText("");
-							textFChat.grabFocus();
-						}
-					}		
-				}
-
-				@Override
-				public void keyReleased(KeyEvent e) {
-					// TODO Auto-generated method stub
-				}
-
-				@Override
-				public void keyTyped(KeyEvent e) {
-					// TODO Auto-generated method stub
-				}
-
-
-				// *********** MAIN ************** //
-				public static void main(String[] args){
-					String host = "localhost";
-					String idClient = "JustForTest";
-					int port = DEFAULT_PORT; 
-
-					ClientFenetre chat = new ClientFenetre(host, port, idClient);
-				}
-
+		if(event.getSource() == this.buttonSend) {
+			if(text != null && !text.trim().isEmpty()) {		
+				client.handleMessageFromClientUI(text);
+				textFChat.setText("");
+				textFChat.grabFocus();
+			}
+		}
+		if(event.getSource() == this.buttonLogoff) {
+			client.handleMessageFromClientUI("#logoff");
+			textFChat.grabFocus();			
+		}
+		if(event.getSource() == this.buttonLogin) {
+			client.handleMessageFromClientUI("#login");
+			textFChat.grabFocus();			
+		}
+		if(event.getSource() == this.textFHost) {
+			// After 1sec, we save the new hostname
+			text = textFHost.getText();
+			client.handleMessageFromClientUI("#sethost "+text);
+		}
 
 	}
+
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		if (key == KeyEvent.VK_ENTER) {
+			String text = textFChat.getText();	 	
+			if(text != null && !text.trim().isEmpty()) {		
+				client.handleMessageFromClientUI(text);
+				textFChat.setText("");
+				textFChat.grabFocus();
+			}
+		}		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+
+	// *********** MAIN ************** //
+	public static void main(String[] args){
+		String host = "localhost";
+		String idClient = "JustForTest";
+		int port = DEFAULT_PORT; 
+
+		ClientFenetre chat = new ClientFenetre(host, port, idClient);
+	}
+
+
+}
