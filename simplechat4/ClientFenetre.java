@@ -11,6 +11,7 @@ import javax.swing.event.DocumentListener;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 
 public class ClientFenetre extends JFrame implements ChatIF, ActionListener, KeyListener {
 
@@ -113,6 +114,8 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		// Set Panel
 		this.textFPort = new JTextField(Integer.toString(port));
 		textFPort.setColumns(6);
+		textFPort.addKeyListener(this);
+
 		
 		JLabel labelPort = new JLabel("Port:");
 		labelPort.setForeground(Color.RED);
@@ -123,6 +126,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 
 		this.textFHost = new JTextField(host);
 		textFHost.setColumns(10);
+		textFHost.addKeyListener(this);
 		
 		JLabel labelHost = new JLabel("Host:");
 		labelHost.setForeground(Color.RED);
@@ -239,14 +243,36 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	@Override
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		if (key == KeyEvent.VK_ENTER) {
-			String text = textFChat.getText();	 	
-			if(text != null && !text.trim().isEmpty()) {		
-				client.handleMessageFromClientUI(text);
-				textFChat.setText("");
-				textFChat.grabFocus();
-			}
-		}		
+		Component compFocus = this.getFocusOwner();
+		
+		
+		if(compFocus instanceof JTextField) {
+			if (key == KeyEvent.VK_ENTER) {
+				String text = ((JTextField)compFocus).getText();	
+				
+				if(text != null && !text.trim().isEmpty()) {
+
+					if(compFocus == this.textFChat) {					
+						client.handleMessageFromClientUI(text);
+						textFChat.setText("");
+						textFChat.grabFocus();
+					}
+					if(compFocus == this.textFHost) {					
+						client.handleMessageFromClientUI("#sethost "+text);		
+					}
+					if(compFocus == this.textFPort) {					
+						if(text.matches("^-?\\d+$")) {		
+							int newPort = Integer.parseInt(text);
+							client.handleMessageFromClientUI("#setport "+newPort);
+						}
+						else {
+							display("Please, provide a number for port.");
+						}
+					}
+					
+				}
+			}		
+		}
 	}
 
 	@Override
