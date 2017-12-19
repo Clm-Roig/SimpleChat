@@ -37,6 +37,8 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	private JButton		buttonLogin;
 	private JButton		buttonLogoff;
 	private JButton 	buttonSend;
+	private JButton		buttonSetPort;
+	private JButton		buttonSetHost;
 	private JTextField 	textFPort;
 	private JTextField 	textFHost;
 
@@ -44,14 +46,11 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	private final Color red = new Color(255,90,87);
 	private final Color green = new Color(151,255,155);
 	private final Color blue = new Color(205,208,255);
-
+	private final Color displayAreaColor = new Color(220,220,220);
 
 	// Misc
 	final private static String APP_NAME = "Simple Chat 4";
 	ChatClient 			client;
-
-	private long dateLastModif = System.currentTimeMillis();
-	private int DELAY_BEFORE_SAVING = 2000;
 
 	//Constructors ****************************************************
 
@@ -91,6 +90,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		this.chatPanel = new JPanel();
 		chatPanel.add(textFChat);
 		chatPanel.add(buttonSend);
+		chatPanel.setBackground(Color.BLACK);
 
 		// Interact Panel (Login + logoff + setPort + setHost)
 		this.buttonLogoff = new JButton("Logoff");
@@ -107,52 +107,38 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		this.interactPanel = new JPanel();
 		interactPanel.add(buttonLogin);
 		interactPanel.add(buttonLogoff);
+		interactPanel.setBackground(Color.BLACK);
+
 
 		// Set Panel
 		this.textFPort = new JTextField(Integer.toString(port));
 		textFPort.setColumns(6);
-		textFPort.getDocument().addDocumentListener(
-				new DocumentListener() {
-					public void changedUpdate(DocumentEvent e) {
-
-					}
-					public void removeUpdate(DocumentEvent e) {
-
-					}
-					public void insertUpdate(DocumentEvent e) {
-						long curentTime = System.currentTimeMillis();
-						System.out.println(curentTime - dateLastModif);
-						if (curentTime - dateLastModif > DELAY_BEFORE_SAVING) {
-							client.handleMessageFromClientUI("#setport "+Integer.parseInt(textFPort.getText()));
-						}
-						dateLastModif = System.currentTimeMillis();		
-					}
-				}
-				);
+		
 		JLabel labelPort = new JLabel("Port:");
+		labelPort.setForeground(Color.RED);
+		
+		this.buttonSetPort = new JButton("Set");
+		buttonSetPort.setPreferredSize(new Dimension(60, 18));
+		buttonSetPort.addActionListener(this);
 
 		this.textFHost = new JTextField(host);
 		textFHost.setColumns(10);
-		textFHost.getDocument().addDocumentListener(
-				new DocumentListener() {
-					public void changedUpdate(DocumentEvent e) {
-
-					}
-					public void removeUpdate(DocumentEvent e) {
-
-					}
-					public void insertUpdate(DocumentEvent e) {
-						client.handleMessageFromClientUI("#sethost "+textFHost.getText());
-					}
-				}
-				);
+		
 		JLabel labelHost = new JLabel("Host:");
+		labelHost.setForeground(Color.RED);
+
+		this.buttonSetHost = new JButton("Set");
+		buttonSetHost.setPreferredSize(new Dimension(60, 18));
+		buttonSetHost.addActionListener(this);
 
 		this.setPanel = new JPanel();
 		setPanel.add(labelHost);
 		setPanel.add(textFHost);
+		setPanel.add(buttonSetHost);
 		setPanel.add(labelPort);
 		setPanel.add(textFPort);
+		setPanel.add(buttonSetPort);
+		setPanel.setBackground(Color.BLACK);
 
 		// South Panel (Interact + Chat Panels + setPanel)
 		JPanel southPanel = new JPanel();
@@ -166,7 +152,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		this.displayArea = new JTextArea();
 		displayArea.setLineWrap(true);
 		displayArea.setEditable(false);
-		displayArea.setBackground(this.blue);
+		displayArea.setBackground(this.displayAreaColor);
 		displayArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		displayArea.setFont(new Font("Copperplate", Font.PLAIN, MSG_FONT_SIZE));
 
@@ -177,15 +163,15 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		// MainPanel Configuration
 		this.mainPanel = new JPanel(new BorderLayout());	 
 		mainPanel.add(scrollPane, BorderLayout.CENTER);
-
-
+		mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		mainPanel.add(southPanel, BorderLayout.SOUTH);
+		mainPanel.setBackground(new Color(0,0,0));
 
+		
 		// Window Configuration	   
 		this.setTitle(APP_NAME);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 		this.setContentPane(mainPanel); 	
 		this.pack();
@@ -204,7 +190,6 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 
 			System.exit(1);
 		}
-
 		this.setVisible(true);
 		textFChat.grabFocus();
 	}
@@ -234,12 +219,20 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 			client.handleMessageFromClientUI("#login");
 			textFChat.grabFocus();			
 		}
-		if(event.getSource() == this.textFHost) {
-			// After 1sec, we save the new hostname
+		if(event.getSource() == this.buttonSetHost) {
 			text = textFHost.getText();
 			client.handleMessageFromClientUI("#sethost "+text);
 		}
-
+		if(event.getSource() == this.buttonSetPort) {
+			String newPortStr = textFPort.getText();
+			if(newPortStr.matches("^-?\\d+$")) {		
+				int newPort = Integer.parseInt(newPortStr);
+				client.handleMessageFromClientUI("#setport "+newPort);
+			}
+			else {
+				display("Please, provide a number for port.");
+			}
+		}
 	}
 
 
