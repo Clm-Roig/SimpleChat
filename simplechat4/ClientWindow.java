@@ -6,14 +6,12 @@ import client.*;
 import common.*;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 
-public class ClientFenetre extends JFrame implements ChatIF, ActionListener, KeyListener {
+public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyListener {
 
 	//Class variables *************************************************
 	final public static int DEFAULT_PORT = 5555;
@@ -59,7 +57,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	 * @param host The host to connect to.
 	 * @param port The port to connect on.
 	 */
-	public ClientFenetre(String host, int port) {
+	public ClientWindow(String host, int port) {
 		super();
 		try {
 			client = new ChatClient(host, port, this);
@@ -76,7 +74,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	 * @param port The port to connect on.
 	 * @param idClient The id choosen by the user (will be used to loggin).
 	 */
-	public ClientFenetre(String host, int port, String idClient) {
+	public ClientWindow(String host, int port, String idClient) {
 		super();
 
 		// Chat Panel
@@ -203,17 +201,47 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		this.displayArea.append(message + "\n");
 		this.displayArea.setCaretPosition(displayArea.getDocument().getLength());
 	}
+	
+	// ***** Communication with Client Business *****
+	
+	// Try to set the port with the value in the JTextField of the port
+	private void setPort() {
+		String newPortStr = textFPort.getText();
+		if(newPortStr.matches("^-?\\d+$")) {		
+			int newPort = Integer.parseInt(newPortStr);
+			client.handleMessageFromClientUI("#setport "+newPort);
+		}
+		else {
+			display("Please, provide a number for port.");
+		}
+	}
+	
+	// Try to set the host with the value in the JTextField of the host
+	private void setHost() {
+		String newHost = textFHost.getText();
+		if(newHost != null && !newHost.trim().isEmpty()) {
+			client.handleMessageFromClientUI("#sethost "+newHost);	
+		}
+	}
+	
+	// Send message to the Client with the value in the JtextField of the chat
+	private void sendMessage() {
+		String text = textFChat.getText();
+		if(text != null && !text.trim().isEmpty()) {		
+			client.handleMessageFromClientUI(text);
+			textFChat.setText("");
+			textFChat.grabFocus();
+		}
+	}
+	
+	
+	// ***** Listeners *****
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		String text = textFChat.getText();
 
 		if(event.getSource() == this.buttonSend) {
-			if(text != null && !text.trim().isEmpty()) {		
-				client.handleMessageFromClientUI(text);
-				textFChat.setText("");
-				textFChat.grabFocus();
-			}
+			sendMessage();
 		}
 		if(event.getSource() == this.buttonLogoff) {
 			client.handleMessageFromClientUI("#logoff");
@@ -224,18 +252,10 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 			textFChat.grabFocus();			
 		}
 		if(event.getSource() == this.buttonSetHost) {
-			text = textFHost.getText();
-			client.handleMessageFromClientUI("#sethost "+text);
+			setHost();
 		}
 		if(event.getSource() == this.buttonSetPort) {
-			String newPortStr = textFPort.getText();
-			if(newPortStr.matches("^-?\\d+$")) {		
-				int newPort = Integer.parseInt(newPortStr);
-				client.handleMessageFromClientUI("#setport "+newPort);
-			}
-			else {
-				display("Please, provide a number for port.");
-			}
+			setPort();
 		}
 	}
 
@@ -245,44 +265,31 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		int key = e.getKeyCode();
 		Component compFocus = this.getFocusOwner();
 		
-		
 		if(compFocus instanceof JTextField) {
 			if (key == KeyEvent.VK_ENTER) {
-				String text = ((JTextField)compFocus).getText();	
 				
-				if(text != null && !text.trim().isEmpty()) {
-
-					if(compFocus == this.textFChat) {					
-						client.handleMessageFromClientUI(text);
-						textFChat.setText("");
-						textFChat.grabFocus();
-					}
-					if(compFocus == this.textFHost) {					
-						client.handleMessageFromClientUI("#sethost "+text);		
-					}
-					if(compFocus == this.textFPort) {					
-						if(text.matches("^-?\\d+$")) {		
-							int newPort = Integer.parseInt(text);
-							client.handleMessageFromClientUI("#setport "+newPort);
-						}
-						else {
-							display("Please, provide a number for port.");
-						}
-					}
-					
+				if(compFocus == this.textFChat) {					
+					sendMessage();
 				}
+				if(compFocus == this.textFHost) {				
+					setHost();
+				}
+				if(compFocus == this.textFPort) {					
+					setPort();
+				}
+				
 			}		
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
+		
 	}
 
 
@@ -292,7 +299,7 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 		String idClient = "JustForTest";
 		int port = DEFAULT_PORT; 
 
-		ClientFenetre chat = new ClientFenetre(host, port, idClient);
+		ClientWindow chat = new ClientWindow(host, port, idClient);
 	}
 
 
