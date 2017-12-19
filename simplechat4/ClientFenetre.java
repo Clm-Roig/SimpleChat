@@ -49,7 +49,10 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 	// Misc
 	final private static String APP_NAME = "Simple Chat 4";
 	ChatClient 			client;
-
+	
+	private long dateLastModif = System.currentTimeMillis();
+	private int DELAY_BEFORE_SAVING = 2000;
+	
 	//Constructors ****************************************************
 
 	/**
@@ -117,7 +120,12 @@ public class ClientFenetre extends JFrame implements ChatIF, ActionListener, Key
 
 				}
 				public void insertUpdate(DocumentEvent e) {
-					client.handleMessageFromClientUI("#setport "+Integer.parseInt(textFPort.getText()));
+					long curentTime = System.currentTimeMillis();
+					System.out.println(curentTime - dateLastModif);
+					if (curentTime - dateLastModif > DELAY_BEFORE_SAVING) {
+						client.handleMessageFromClientUI("#setport "+Integer.parseInt(textFPort.getText()));
+					}
+					dateLastModif = System.currentTimeMillis();		
 				}
 			}
 		);
