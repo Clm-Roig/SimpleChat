@@ -26,20 +26,27 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 	final private int MARGIN = 10;
 
 	// UI
-	private JPanel 		mainPanel;
+	
 	private JTextArea 	displayArea;
 	private JScrollPane scrollPane;
+	
+	private JPanel 		mainPanel;
 	private JPanel 		chatPanel;
 	private JPanel		interactPanel;
 	private JPanel 		setPanel;
-	private JTextField 	textFChat;
+	private JPanel 		southPanel;
+	
 	private JButton		buttonLogin;
 	private JButton		buttonLogoff;
 	private JButton 	buttonSend;
 	private JButton		buttonSetPort;
 	private JButton		buttonSetHost;
+	private JButton		buttonHide;
+	
+	private JTextField 	textFChat;
 	private JTextField 	textFPort;
 	private JTextField 	textFHost;
+	private JTextField 	textFLogin;
 
 	// Color
 	private final Color red = new Color(255,90,87);
@@ -49,25 +56,11 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 
 	// Misc
 	final private static String APP_NAME = "Simple Chat 4";
-	ChatClient 			client;
+	private boolean isConnected = false; // If true, disable the login JTextField
+	
+	ChatClient client;
 
 	//Constructors ****************************************************
-
-	/**
-	 * @param host The host to connect to.
-	 * @param port The port to connect on.
-	 */
-	public ClientWindow(String host, int port) {
-		super();
-		try {
-			client = new ChatClient(host, port, this);
-		} 
-		catch(IOException exception) {
-			System.out.println("Error: Can't create the Client !"
-					+ " Terminating client.");
-			System.exit(1);
-		}
-	}
 
 	/**
 	 * @param host The host to connect to.
@@ -91,7 +84,14 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		chatPanel.add(buttonSend);
 		chatPanel.setBackground(Color.BLACK);
 
-		// Interact Panel (Login + logoff + setPort + setHost)
+		// Interact Panel (Login + logoff)
+		JLabel labelLogin = new JLabel("Login:");
+		labelLogin.setForeground(Color.RED);
+		
+		this.textFLogin = new JTextField();
+		textFLogin.setPreferredSize(new Dimension(200 ,JTEXT_HEIGHT));
+		textFLogin.addKeyListener(this);		
+		
 		this.buttonLogoff = new JButton("Logoff");
 		buttonLogoff.setBackground(this.red);
 		buttonLogoff.setForeground(Color.WHITE);
@@ -104,6 +104,7 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		buttonLogin.addActionListener(this);
 
 		this.interactPanel = new JPanel();
+		interactPanel.add(textFLogin);
 		interactPanel.add(buttonLogin);
 		interactPanel.add(buttonLogoff);
 		interactPanel.setBackground(Color.BLACK);
@@ -114,7 +115,6 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		textFPort.setColumns(6);
 		textFPort.addKeyListener(this);
 
-		
 		JLabel labelPort = new JLabel("Port:");
 		labelPort.setForeground(Color.RED);
 		
@@ -122,6 +122,7 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		buttonSetPort.setPreferredSize(new Dimension(60, 18));
 		buttonSetPort.addActionListener(this);
 
+		
 		this.textFHost = new JTextField(host);
 		textFHost.setColumns(10);
 		textFHost.addKeyListener(this);
@@ -132,6 +133,7 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		this.buttonSetHost = new JButton("Set");
 		buttonSetHost.setPreferredSize(new Dimension(60, 18));
 		buttonSetHost.addActionListener(this);
+		
 
 		this.setPanel = new JPanel();
 		setPanel.add(labelHost);
@@ -141,14 +143,20 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		setPanel.add(textFPort);
 		setPanel.add(buttonSetPort);
 		setPanel.setBackground(Color.BLACK);
-
-		// South Panel (Interact + Chat Panels + setPanel)
-		JPanel southPanel = new JPanel();
+		
+		// Button Hide
+		this.buttonHide = new JButton("^");
+		buttonHide.addActionListener(this);
+		
+		// South Panel (interactPanel + chatPanel + setPanel)
+		this.southPanel = new JPanel();
 		BoxLayout bl = new BoxLayout(southPanel, BoxLayout.PAGE_AXIS);
 		southPanel.setLayout(bl);
 		southPanel.add(chatPanel);
 		southPanel.add(interactPanel);
 		southPanel.add(setPanel);
+		southPanel.add(buttonHide);
+		southPanel.setBackground(Color.BLACK);
 
 		// Displaying messages Area
 		this.displayArea = new JTextArea();
@@ -156,7 +164,9 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		displayArea.setEditable(false);
 		displayArea.setBackground(this.displayAreaColor);
 		displayArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		displayArea.setFont(new Font("Copperplate", Font.PLAIN, MSG_FONT_SIZE));
+		
+		// TODO : set font
+		displayArea.setFont(new Font("Verdana", Font.PLAIN, MSG_FONT_SIZE));
 
 		// Scroll Panel
 		this.scrollPane = new JScrollPane(displayArea);
@@ -173,7 +183,6 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		// Window Configuration	   
 		this.setTitle(APP_NAME);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 
 		this.setContentPane(mainPanel); 	
 		this.pack();
@@ -234,6 +243,18 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		}
 	}
 	
+	private void login() {
+		String id = textFLogin.getText();
+		if(id != null && !id.trim().isEmpty()) {	
+			client.setId(id);
+			client.handleMessageFromClientUI("#login");
+			textFChat.grabFocus();	
+		}
+		else {
+			display("Please, provide a login to connect to the server!");
+		}
+	}
+	
 	
 	// ***** Listeners *****
 
@@ -248,14 +269,26 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 			textFChat.grabFocus();			
 		}
 		if(event.getSource() == this.buttonLogin) {
-			client.handleMessageFromClientUI("#login");
-			textFChat.grabFocus();			
+			login();
 		}
 		if(event.getSource() == this.buttonSetHost) {
 			setHost();
 		}
 		if(event.getSource() == this.buttonSetPort) {
 			setPort();
+		}
+		if(event.getSource() == this.buttonHide) {
+			if(interactPanel.isVisible()) {
+				interactPanel.setVisible(false);
+				setPanel.setVisible(false);
+				buttonHide.setText("v");
+			}
+			else {
+				interactPanel.setVisible(true);
+				setPanel.setVisible(true);
+				buttonHide.setText("^");
+			}
+			
 		}
 	}
 
@@ -264,10 +297,9 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		Component compFocus = this.getFocusOwner();
-		
+
 		if(compFocus instanceof JTextField) {
 			if (key == KeyEvent.VK_ENTER) {
-				
 				if(compFocus == this.textFChat) {					
 					sendMessage();
 				}
@@ -276,6 +308,9 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 				}
 				if(compFocus == this.textFPort) {					
 					setPort();
+				}
+				if(compFocus == this.textFLogin) {					
+					login();
 				}
 				
 			}		
@@ -296,7 +331,7 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 	// *********** MAIN ************** //
 	public static void main(String[] args){
 		String host = "localhost";
-		String idClient = "JustForTest";
+		String idClient = "";
 		int port = DEFAULT_PORT; 
 
 		ClientWindow chat = new ClientWindow(host, port, idClient);

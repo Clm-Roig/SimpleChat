@@ -223,6 +223,10 @@ public class ChatClient implements Observer
 		System.out.println("Bye bye !");
 		System.exit(0);
 	}
+	
+	public void setId(String id) {
+		this.idClient = id;
+	}
 
 	@Override
 	public void update(Observable o, Object arg) {
