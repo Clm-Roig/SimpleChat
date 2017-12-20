@@ -1,5 +1,6 @@
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.*;
 import java.io.*;
 import client.*;
@@ -56,7 +57,6 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 
 	// Misc
 	final private static String APP_NAME = "Simple Chat 4";
-	private boolean isConnected = false; // If true, disable the login JTextField
 	
 	ChatClient client;
 
@@ -145,7 +145,7 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		setPanel.setBackground(Color.BLACK);
 		
 		// Button Hide
-		this.buttonHide = new JButton("^");
+		this.buttonHide = new JButton("▴");
 		buttonHide.addActionListener(this);
 		
 		// South Panel (interactPanel + chatPanel + setPanel)
@@ -165,8 +165,8 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		displayArea.setBackground(this.displayAreaColor);
 		displayArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
-		// TODO : set font
-		displayArea.setFont(new Font("Verdana", Font.PLAIN, MSG_FONT_SIZE));
+        Font font = new Font("Ubuntu", Font.PLAIN, MSG_FONT_SIZE);
+		displayArea.setFont(font);
 
 		// Scroll Panel
 		this.scrollPane = new JScrollPane(displayArea);
@@ -201,6 +201,7 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 
 			System.exit(1);
 		}
+		
 		this.setVisible(true);
 		textFChat.grabFocus();
 	}
@@ -281,12 +282,12 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 			if(interactPanel.isVisible()) {
 				interactPanel.setVisible(false);
 				setPanel.setVisible(false);
-				buttonHide.setText("v");
+				buttonHide.setText("▾");
 			}
 			else {
 				interactPanel.setVisible(true);
 				setPanel.setVisible(true);
-				buttonHide.setText("^");
+				buttonHide.setText("▴");
 			}
 			
 		}
