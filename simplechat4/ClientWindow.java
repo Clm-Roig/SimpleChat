@@ -218,7 +218,9 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 	
 	// ***** Communication with Client Business *****
 	
-	// Try to set the port with the value in the JTextField of the port
+	/**
+	 * Try to set the port with the value in the JTextField "port".
+	 */
 	private void setPort() {
 		String newPortStr = textFPort.getText();
 		if(newPortStr.matches("^-?\\d+$")) {		
@@ -230,7 +232,9 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		}
 	}
 	
-	// Try to set the host with the value in the JTextField of the host
+	/**
+	 *  Try to set the host with the value in the JTextField "host".
+	 */
 	private void setHost() {
 		String newHost = textFHost.getText();
 		if(newHost != null && !newHost.trim().isEmpty()) {
@@ -238,7 +242,9 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		}
 	}
 	
-	// Send message to the Client with the value in the JtextField of the chat
+	/**
+	 * Send message to the Client with the value in the JTextField "chat".
+	 */
 	private void sendMessage() {
 		String text = textFChat.getText();
 		if(text != null && !text.trim().isEmpty()) {		
@@ -248,6 +254,9 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		}
 	}
 	
+	/**
+	 * Try to login to the server with the login in the JTextField "login"
+	 */
 	private void login() {
 		String id = textFLogin.getText();
 		if(id != null && !id.trim().isEmpty()) {	
