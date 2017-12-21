@@ -224,6 +224,12 @@ public class ChatClient implements Observer
 		System.exit(0);
 	}
 	
+	/** 
+	 * This function allow the user to change the id, particulary after creating
+	 * a ChatClient object with an old id. 
+	 * @param id
+	 */
+	
 	public void setId(String id) {
 		this.idClient = id;
 	}
