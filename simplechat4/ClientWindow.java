@@ -145,7 +145,7 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		setPanel.setBackground(Color.BLACK);
 		
 		// Button Hide
-		this.buttonHide = new JButton("▴");
+		this.buttonHide = new JButton("-");
 		buttonHide.addActionListener(this);
 		
 		// South Panel (interactPanel + chatPanel + setPanel)
@@ -282,12 +282,12 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 			if(interactPanel.isVisible()) {
 				interactPanel.setVisible(false);
 				setPanel.setVisible(false);
-				buttonHide.setText("▾");
+				buttonHide.setText("+");
 			}
 			else {
 				interactPanel.setVisible(true);
 				setPanel.setVisible(true);
-				buttonHide.setText("▴");
+				buttonHide.setText("-");
 			}
 			
 		}
