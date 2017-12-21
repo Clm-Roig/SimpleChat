@@ -97,7 +97,7 @@ public class ClientWindow extends JFrame implements ChatIF, ActionListener, KeyL
 		buttonLogoff.setForeground(Color.WHITE);
 		buttonLogoff.setOpaque(true);
 		buttonLogoff.setBorderPainted(false);
-		buttonLogoff.setPreferredSize(new Dimension(90 - MARGIN, JTEXT_HEIGHT));
+		buttonLogoff.setPreferredSize(new Dimension(100 - MARGIN, JTEXT_HEIGHT));
 		buttonLogoff.addActionListener(this);
 
 		this.buttonLogin = new JButton("Login");
